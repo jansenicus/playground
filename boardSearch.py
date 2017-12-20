@@ -9,44 +9,59 @@
 # Surabaya, East Java, Indonesia
 # ----------------------------------------------
 
-
 class boardObject():
 
- def getDimension(self, board):
- # get rows and columns length
+	def __init__(self):
+	# let's start by making sure uneven grid is handled
+		cols = self.getColumns(board)
+		for i in range(0, len(board)):
+	 		d = cols - len(board[i])
+			board[i] = board[i] + d * " "
+	 	return
+
+	def getDimension(self, board):
+	# get rows and columns length
 		rows = len(board)
-		cols = len(board[0])
+		cols = self.getColumns(board)
 		return rows, cols
 
- def display(self, board):
- # display the board object
+	def getColumns(self, board):
+	# column number should be simple but life is not always simple
+		cols = len(board[0])
+	# complex column number for an uneven grid
+		colmax = lambda board: max([len(row) for row in board])
+		cols = colmax(board)
+		return cols
+
+	def display(self, board):
+	# display the board object
 		row, col = self.getDimension(board)
 		for i in range(0, row):
 			for j in range (0, col):
 				print board[i][j],
 			print ''
 
- def transpose(self, board):
- # board can be transposed
- # transpose array row <--> col
- # horizontal line becomes vertical
+	def transpose(self, board):
+	# board can be transposed
+	# transpose array row <--> col
+	# horizontal line becomes vertical
 		board = zip(*board)
-		tboard = [''.join(b) for b in board]
-		return tboard
-		
- def flip(self, board):
- # flip horizontally L <--> R
-  fb = []
-  for b in board:
-   b = b[::-1]
-   fb.append(''.join(b))
-  return fb
+		oBoardT = [''.join(b) for b in board]
+		return oBoardT
 
- def lineSearch(self, word, aLine):
+	def flip(self, board):
+	# flip horizontally L <--> R
+		fb = []
+		for b in board:
+			b = b[::-1]
+			fb.append(''.join(b))
+		return fb
+
+	def lineSearch(self, word, aLine):
 		txtMatch = ''
 		matchLR = []
 		matchRL = []
-		
+
 		# search forward from L --> R
 		import re
 		findLR = re.finditer(word, aLine)
@@ -74,9 +89,8 @@ class boardObject():
 
 		return nMatch, txtMatch
 
-
- def horizontalSearch(self, word, board):
- # search the board for word
+	def horizontalSearch(self, word, board):
+		# search the board for word
 		rows, cols = self.getDimension(board)
 		nMatchWord = 0
 
@@ -84,59 +98,53 @@ class boardObject():
 			aLine = board[i]
 			nMatch, txtMatch = self.lineSearch(word, aLine)
 			print i+1, str(nMatch)+" matches: ", txtMatch
-			nMatchWord = nMatchWord + nMatch
+		nMatchWord = nMatchWord + nMatch
 
 		return nMatchWord
 
-
-
- def verticalSearch(self, word, board):
-  # horizontal board can be transposed to vertical board
+	def verticalSearch(self, word, board):
+		# horizontal board can be transposed to vertical board
 		# vertical search is equal to horizontal search performed to transposed board
 		nMatchWord = self.horizontalSearch(word, self.transpose(board))
 
 		return nMatchWord
 
-
- def diagonalSearch(self, word, board):
- # search the board for word in its diagonal
+	def diagonalSearch(self, word, board):
+		# search the board for word in its diagonal
 		rows, cols = self.getDimension(board)
 		nMatchWord = 0
 
 		# 1st diagonal: L --> R downward, \
 		for i in range(0, cols):
-		  aLine = ''
-		  for j in range(0,rows):
-		    k = i + j
-		    if (k < cols):
-		      aLine = aLine + board[j][k]
-		  print aLine
-		  nMatch, txtMatch = self.lineSearch(word, aLine)
-		  #print [i+1], str(nMatch)+" matches: ", txtMatch
-		  nMatchWord = nMatchWord + nMatch
+			aLine = ''
+			for j in range(0,rows):
+				k = i + j
+				if (k < cols):
+					aLine = aLine + board[j][k]
+			print aLine
+			nMatch, txtMatch = self.lineSearch(word, aLine)
+			#print [i+1], str(nMatch)+" matches: ", txtMatch
+			nMatchWord = nMatchWord + nMatch
 
 		# 2nd diagonal: R --> L downward /
 		for i in range(0, cols):
-		  aLine = ''
-		  for j in range(0,rows):
-		    k = i + j
-		    if (k < cols):
-		      aLine = aLine + self.flip(board)[j][k]
-		  print aLine
-		  nMatch, txtMatch = self.lineSearch(word, aLine)
-		  #print [i+1], str(nMatch)+" matches: ", txtMatch
-		  nMatchWord = nMatchWord + nMatch
+			aLine = ''
+			for j in range(0,rows):
+				k = i + j
+				if (k < cols):
+					aLine = aLine + self.flip(board)[j][k]
+			print aLine
+			nMatch, txtMatch = self.lineSearch(word, aLine)
+			#print [i+1], str(nMatch)+" matches: ", txtMatch
+			nMatchWord = nMatchWord + nMatch
 
 		return nMatchWord
-		
- def allSearch(self, word, board):
- # sum up all the eight (8) direction
-   return self.horizontalSearch(word, board) +\
-   self.verticalSearch(word, board) +\
-   self.diagonalSearch(word,board)
 
-
-
+	def allSearch(self, word, board):
+	# sum up all the eight (8) direction
+		return self.horizontalSearch(word, board) +\
+		self.verticalSearch(word, board) +\
+		self.diagonalSearch(word, board)
 
 #------------------------------------------------------------------------
 # G E E K S F O R G E E K S 
@@ -145,20 +153,20 @@ class boardObject():
 # A B C G E E K S B C A G E 
 #------------------------------------------------------------------------
 board = [ "GEEKSFORGEEKS",\
-			"GEEKSQUIZGEEK",\
-			"IDEQAPRACTICE","ABCGEEKSBCAGE"]
+"GEEKSQUIZGEEK",\
+"IDEQAPRACTICE","ABCGEEKSBAKES"]
 #------------------------------------------------------------------------
-dBoard = boardObject()
-dBoard.display(board)
+oBoard = boardObject()
+oBoard.display(board)
 print "---"
-fb = dBoard.flip(board)
-#dBoard.display(fb)
-#print dBoard.getDimension(board)
-#print dBoard.lineSearch('EE', board[0])
-#print dBoard.lineSearch('EE', board[1])
-#print dBoard.horizontalSearch('EE', board)
+fb = oBoard.flip(board)
+#oBoard.display(fb)
+#print oBoard.getDimension(board)
+#print oBoard.lineSearch('EE', board[0])
+#print oBoard.lineSearch('EE', board[1])
+#print oBoard.horizontalSearch('EE', board)
 
-tboard = dBoard.transpose(board)
+oBoardT = oBoard.transpose(board)
 
 # G G I A 
 # E E D B 
@@ -172,9 +180,9 @@ tboard = dBoard.transpose(board)
 # E G T C 
 # E E I A 
 # K E C G 
-# S K E E 
+# S K E E
 
-dBoard.display(tboard)
-#print dBoard.search_vertic_all('EE', board)
-#print dBoard.diagonalSearch('EE',board)
-print dBoard.allSearch('EE', board)
+oBoard.display(oBoardT)
+#print oBoard.search_vertic_all('EE', board)
+#print oBoard.diagonalSearch('EE',board)
+print oBoard.allSearch('EE', board)
